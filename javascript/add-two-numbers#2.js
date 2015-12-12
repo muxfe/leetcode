@@ -20,32 +20,19 @@ function ListNode(val) {
  * @return {ListNode}
  */
 var addTwoNumbers = function(l1, l2) {
-  var num1 = '', num2 = '', rnum1, rnum2;
-  var sum, numarr = [], ans = {};
-  var cursor = l1;
-  while (cursor) {
-    num1 += cursor.val;
+  var ans = new ListNode(0), cursor = ans;
+  var sum = 0, carry = 0;
+  while (l1 || l2) {
+    sum = (l1 ? l1.val : 0) + (l2 ? l2.val : 0) + carry;
+    carry = Math.floor(sum / 10);
+    sum = sum % 10;
+    cursor.next = new ListNode(sum);
     cursor = cursor.next;
+    if (l1) l1 = l1.next;
+    if (l2) l2 = l2.next;
   }
-  cursor = l2;
-  while (cursor) {
-    num2 += cursor.val;
-    cursor = cursor.next;
-  }
-  rnum1 = parseInt(num1.split('').reverse().join(''));
-  rnum2 = parseInt(num2.split('').reverse().join(''));
-  num1 = parseInt(num1);
-  num2 = parseInt(num2);
-  sum = num1 + num2 + (rnum1 - num1) + (rnum2 - num2);
-  numarr = ('' + sum).split('').reverse();
-  ans = new ListNode(parseInt(numarr[0]));
-  cursor = ans;
-  for (var i = 1; i < numarr.length; i++) {
-    var node = new ListNode(parseInt(numarr[i]));
-    cursor.next = node;
-    cursor = cursor.next;
-  }
-  return ans; 
+  if (carry) cursor.next = new ListNode(carry);
+  return ans.next;
 };
 
 // test
@@ -69,6 +56,6 @@ var printNodeList = function (list) {
   return number;
 }
 
-var l1 = genListNode([9]);
-var l2 = genListNode([1,9,9,9,9,9,8,9,9,9]);
+var l1 = genListNode([9,9]);
+var l2 = genListNode([9,9]);
 console.log(printNodeList(addTwoNumbers(l1, l2)));
