@@ -42,18 +42,109 @@ var longestPalindrome = function(s) {
 
 // test
 // Accepted
+// var start = Date.now();
+// console.log(longestPalindrome('a'));
+// console.log(longestPalindrome('aa'));
+// console.log(longestPalindrome('vcaawv'));
+// console.log(longestPalindrome('vabcbacv'));
+// console.log(longestPalindrome('sldkhjfgioweabccbazxm,nbckjqwrmqwlk'));
+// console.log("time: " + (Date.now() - start) + 'ms');
+
+
+// dp
+// time O(n^2) space O(n^2)
+// TLE
+var longestPalindrome_dp = function(s) {
+  var i, j, len;
+  var isPalindrom = new Array(s.length);
+  for (i = 0; i < s.length; i++) isPalindrom[i] = new Array(s.length).fill(false);
+  // isPalindrom[i][j] represent s[i...j] is a parlindrom string.
+  var maxLen = 1, longestBegin = 0;
+  for (i = 0; i < s.length; i++) {
+    isPalindrom[i][i] = true;
+    if (i < s.length - 1 && s[i] === s[i + 1]) {
+      isPalindrom[i][i + 1] = true;
+      maxLen = 2;
+      longestBegin = i;
+    }
+  }
+  for (len = 3; len <= s.length; len++) {
+    for (i = 0; i < s.length; i++) {
+      j = len + i - 1;
+      if (s[i] === s[j] && isPalindrom[i + 1][j - 1]) {
+        isPalindrom[i][j] = true;
+        maxLen = len;
+        longestBegin = i;
+      }
+    }
+  }
+  return s.slice(longestBegin, longestBegin + maxLen);
+}
+
+// enumeration
+// time O(n^2) space O(1)
+// Accepted
+var longestPalindrome_enum = function(s) {
+  if (!s) return '';
+  var longest = s[0];
+  var expandAroundCenter = function (left, right) {
+    while (left >= 0 && right < s.length && s[left] === s[right]) {
+      left--;
+      right++;
+    }
+    return s.slice(left + 1, right);
+  }
+  for (var i = 0; i < s.length; i++) {
+    var odd = expandAroundCenter(i, i);
+    if (odd.length > longest.length) longest = odd;
+    var even = expandAroundCenter(i, i + 1);
+    if (longest.length < even.length) longest = even;
+  }
+  return longest;
+}
+
+// brute-force
+// time O(n^3) space O(1)
+// TLE
+var longestPalindrome_bf = function(s) {
+  if (!s) return '';
+  var longest = s[0], str, i, j, len;
+  var isPalindrom = function (left, right) {
+    while (left < right && s[left] === s[right]) {
+      left++;
+      right--;
+    }
+    return left >= right;
+  }
+  for (len = 2; len <= s.length; len++) {
+    for (i = 0; i < s.length; i++) {
+      j = i + len - 1;
+      if (isPalindrom(i, j)) {
+        str = s.slice(i, j + 1);
+        if (longest.length < str.length) longest = str;
+      }
+    }
+  }
+  return longest;
+}
+
+
+// test
 var start = Date.now();
-console.log(longestPalindrome('a'));
-console.log(longestPalindrome('aa'));
-console.log(longestPalindrome('vcaawv'));
-console.log(longestPalindrome('vabcbacv'));
-console.log(longestPalindrome('sldkhjfgioweabccbazxm,nbckjqwrmqwlk'));
+console.log(longestPalindrome_bf('a'));
+console.log(longestPalindrome_bf('aa'));
+console.log(longestPalindrome_bf('vcaawv'));
+console.log(longestPalindrome_bf('vabcbacv'));
+console.log(longestPalindrome_bf('"kztakrekvefgchersuoiuatzlmwynzjhdqqftjcqmntoyckqfawikkdrnfgbwtdpbkymvwoumurjdzygyzsbmwzpcxcdmmpwzmeibligwiiqbecxwyxigikoewwrczkanwwqukszsbjukzumzladrvjefpegyicsgctdvldetuegxwihdtitqrdmygdrsweahfrepdcudvyvrggbkthztxwicyzazjyeztytwiyybqdsczozvtegodacdokczfmwqfmyuixbeeqluqcqwxpyrkpfcdosttzooykpvdykfxulttvvwnzftndvhsvpgrgdzsvfxdtzztdiswgwxzvbpsjlizlfrlgvlnwbjwbujafjaedivvgnbgwcdbzbdbprqrflfhahsvlcekeyqueyxjfetkxpapbeejoxwxlgepmxzowldsmqllpzeymakcshfzkvyykwljeltutdmrhxcbzizihzinywggzjctzasvefcxmhnusdvlderconvaisaetcdldeveeemhugipfzbhrwidcjpfrumshbdofchpgcsbkvaexfmenpsuodatxjavoszcitjewflejjmsuvyuyrkumednsfkbgvbqxfphfqeqozcnabmtedffvzwbgbzbfydiyaevoqtfmzxaujdydtjftapkpdhnbmrylcibzuqqynvnsihmyxdcrfftkuoymzoxpnashaderlosnkxbhamkkxfhwjsyehkmblhppbyspmcwuoguptliashefdklokjpggfiixozsrlwmeksmzdcvipgkwxwynzsvxnqtchgwwadqybkguscfyrbyxudzrxacoplmcqcsmkraimfwbauvytkxdnglwfuvehpxd"'));
 console.log("time: " + (Date.now() - start) + 'ms');
+
 
 // reverse then find LCS
 // O(n^2)
 // TLE
-var longestPalindrome_n2 = function(s) {
+// This is a wrong way.
+// e.g. abacdfdcaba => abacdfabacd , then the LCS is abacd, not a palindromic string.
+var longestPalindrome_reverseThenLCS = function(s) {
   var rs = s.split('').reverse().join('');
   var ans = 0, ansi = 0;
   var c = new Array(s.length);
