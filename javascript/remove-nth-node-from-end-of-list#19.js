@@ -23,27 +23,25 @@ function ListNode(val) {
  * @return {ListNode}
  */
 var removeNthFromEnd = function(head, n) {
+  if (!head) return false;
   var cursor = head
     , del = head
     , count = 0;
   while (cursor) {
-    count++;
-    if (count > n + 1) {
+    if (count > n) {
       del = del.next;
     }
+    count++;
     cursor = cursor.next;
   }
-  if (del.next) {
-    del.next = del.next.next;
-  } else {
-    del.next = null;
-  }
+  if (del === head && count === n) return head.next;
+  del.next = del.next ? del.next.next : null;
   return head;
 };
 
 // test
-//
-//
+// Accepted
+// 184 ms
 
 var genListNode = function (numarr) {
   var list = new ListNode(numarr[0]);
@@ -56,6 +54,7 @@ var genListNode = function (numarr) {
 };
 
 var printNodeList = function (list) {
+    if (!list) return [];
   var number = '';
   var cursor = list;
   do {
