@@ -28,7 +28,7 @@ var romanToInt = function(s) {
 
 // test
 // Accepted
-//
+// 436ms
 console.log(romanToInt('DCXXI'));
 console.log(romanToInt('III'));
 console.log(romanToInt('VII'));
